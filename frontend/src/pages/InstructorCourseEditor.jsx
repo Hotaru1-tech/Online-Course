@@ -7,6 +7,8 @@ import { apiFetch } from '../lib/api.js';
 import { useAuth } from '../state/auth.jsx';
 import { Button, Card, Input } from '../components/ui.jsx';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://online-course-backend-kqp3.onrender.com';
+
 function canAccess(user) {
   return user && ['INSTRUCTOR', 'ADMIN'].includes(user.role);
 }
@@ -113,7 +115,7 @@ export default function InstructorCourseEditor() {
 
     setUploading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/upload`, {
+      const res = await fetch(`${API_URL}/api/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -122,7 +124,7 @@ export default function InstructorCourseEditor() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Upload failed');
-      setLessonPdfUrl(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}${data.url}`);
+      setLessonPdfUrl(`${API_URL}${data.url}`);
       setMessage('PDF uploaded successfully');
     } catch (err) {
       setMessage(err.message);

@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_URL = import.meta.env.VITE_API_URL || 'https://online-course-backend-kqp3.onrender.com';
 
 export async function apiFetch(path, { token, ...init } = {}) {
   const res = await fetch(`${API_URL}${path}`, {
