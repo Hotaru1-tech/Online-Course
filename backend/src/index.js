@@ -34,8 +34,9 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 app.get('/health', async (req, res) => {
   const [db] = await prisma.$queryRaw`SELECT 1 as ok`;
-  const redisOk = await redis.ping().then(() => true).catch(() => false);
-  res.json({ ok: true, dbOk: Boolean(db?.ok), redisOk });
+  const redisEnabled = Boolean(env.REDIS_URL);
+  const redisOk = redisEnabled ? await redis.ping().then(() => true).catch(() => false) : false;
+  res.json({ ok: true, dbOk: Boolean(db?.ok), redisOk, redisEnabled });
 });
 
 app.use('/api/auth', authRouter);
