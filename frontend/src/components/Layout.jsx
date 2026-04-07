@@ -1,6 +1,9 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../state/auth.jsx';
 
+const API_DOCS_URL = 'https://online-course-backend-kqp3.onrender.com/api/docs';
+const GRAPHQL_URL = 'https://online-course-backend-kqp3.onrender.com/graphql';
+
 export default function Layout() {
   const { user, clear } = useAuth();
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ export default function Layout() {
                   to="/courses"
                   className="rounded-xl px-4 py-2 text-sm font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-brand-500"
                 >
-                  Find Tutors
+                  Explore Courses
                 </Link>
                 {user && (user.role === 'STUDENT' || user.role === 'ADMIN') && (
                   <Link
@@ -89,7 +92,7 @@ export default function Layout() {
                   </Link>
                   <Link
                     className="rounded-xl bg-brand-600 px-6 py-2.5 text-sm font-black text-white shadow-xl shadow-brand-500/20 transition-all hover:bg-brand-500 hover:shadow-brand-500/40 active:scale-95"
-                    to="/login"
+                    to="/signup"
                   >
                     Sign up
                   </Link>
@@ -267,23 +270,23 @@ export default function Layout() {
             <div>
               <h4 className="text-xs font-black uppercase tracking-widest text-white">Resources</h4>
               <ul className="mt-4 space-y-2 text-sm font-bold text-slate-400">
-                <li><a href="/api/docs" className="hover:text-brand-500">API Documentation</a></li>
-                <li><a href="/graphql" className="hover:text-brand-500">GraphQL Playground</a></li>
-                <li><a href="#" className="hover:text-brand-500">Tutor Handbook</a></li>
+                <li><a href={API_DOCS_URL} target="_blank" rel="noreferrer" className="hover:text-brand-500">API Documentation</a></li>
+                <li><a href={GRAPHQL_URL} target="_blank" rel="noreferrer" className="hover:text-brand-500">GraphQL Playground</a></li>
+                <li><Link to="/courses" className="hover:text-brand-500">Course Catalog</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-xs font-black uppercase tracking-widest text-white">Company</h4>
               <ul className="mt-4 space-y-2 text-sm font-bold text-slate-400">
-                <li><a href="#" className="hover:text-brand-500">About Us</a></li>
-                <li><a href="#" className="hover:text-brand-500">Careers</a></li>
-                <li><a href="#" className="hover:text-brand-500">Support</a></li>
+                <li><Link to="/courses" className="hover:text-brand-500">About the Platform</Link></li>
+                <li><Link to="/signup" className="hover:text-brand-500">Become an Instructor</Link></li>
+                <li><a href="mailto:support@indra.school" className="hover:text-brand-500">Support</a></li>
               </ul>
             </div>
           </div>
           <div className="mt-16 border-t border-slate-900 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-xs font-bold text-slate-500">
-              © 2026 ALT+F4. All rights reserved.
+              &copy; 2026 ALT+F4. All rights reserved.
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-slate-900/50 border border-slate-800">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Developed by</span>

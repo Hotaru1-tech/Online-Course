@@ -11,7 +11,7 @@ export default function CoursePage() {
   const { id } = useParams();
   const courseId = Number(id);
 
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const qc = useQueryClient();
   const [message, setMessage] = useState(null);
   const [completingId, setCompletingId] = useState(null);
@@ -43,6 +43,7 @@ export default function CoursePage() {
   const lessons = useMemo(() => data?.lessons ?? [], [data]);
   const isEnrolled = useMemo(() => data?.isEnrolled ?? false, [data]);
   const hasCertificate = useMemo(() => data?.hasCertificate ?? false, [data]);
+  const canEnroll = useMemo(() => !user || ['STUDENT', 'ADMIN'].includes(user.role), [user]);
   const allCompleted = useMemo(() => {
     if (lessons.length === 0) return false;
     return lessons.every((l) => l.progress?.[0]?.completedAt);
@@ -444,16 +445,32 @@ export default function CoursePage() {
                   {!token ? (
                     <Link to="/login">
                       <Button className="w-full !py-5 text-lg font-black shadow-2xl shadow-brand-500/40 rounded-2xl">
-                        Login to Book Lesson
+                        Log in to enroll
                       </Button>
                     </Link>
+                  ) : !canEnroll ? (
+                    <Button
+                      className="w-full !py-5 text-lg font-black shadow-2xl shadow-brand-500/10 rounded-2xl"
+                      variant="secondary"
+                      disabled
+                    >
+                      Instructor accounts cannot enroll
+                    </Button>
+                  ) : isEnrolled ? (
+                    <Button
+                      className="w-full !py-5 text-lg font-black shadow-2xl shadow-emerald-500/10 rounded-2xl"
+                      variant="secondary"
+                      disabled
+                    >
+                      You are already enrolled
+                    </Button>
                   ) : (
                     <Button
                       className="w-full !py-5 text-lg font-black shadow-2xl shadow-brand-500/40 rounded-2xl"
                       onClick={() => enrollMutation.mutate()}
                       disabled={enrollMutation.isPending}
                     >
-                      {enrollMutation.isPending ? 'Processing…' : 'Book a Lesson'}
+                      {enrollMutation.isPending ? 'Processing…' : 'Enroll now'}
                     </Button>
                   )}
                   

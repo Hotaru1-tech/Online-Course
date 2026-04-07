@@ -1,13 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { Card } from '../components/ui.jsx';
 
 export default function CoursesPage() {
+  const [search, setSearch] = useState('');
   const { data, isLoading, error } = useQuery({
     queryKey: ['courses'],
     queryFn: () => api.listCourses()
   });
+
+  const filteredCourses = useMemo(() => {
+    const courses = data ?? [];
+    const term = search.trim().toLowerCase();
+    if (!term) return courses;
+
+    return courses.filter((course) => {
+      const title = course.title?.toLowerCase() ?? '';
+      const description = course.description?.toLowerCase() ?? '';
+      const instructor = course.instructor?.email?.toLowerCase() ?? '';
+      return title.includes(term) || description.includes(term) || instructor.includes(term);
+    });
+  }, [data, search]);
 
   return (
     <div>
@@ -26,10 +41,12 @@ export default function CoursesPage() {
               className="h-11 w-full rounded-2xl border border-amber-200/60 bg-white pl-11 pr-4 text-sm text-slate-900 shadow-sm outline-none transition focus:border-amber-400 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
               placeholder="Search courses…"
               type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="inline-flex h-11 items-center justify-center rounded-2xl border border-amber-200/60 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200">
-            Featured
+            {filteredCourses.length} available
           </div>
         </div>
       </div>
@@ -38,7 +55,7 @@ export default function CoursesPage() {
       {error && <div className="text-sm text-rose-700 dark:text-rose-300">{error.message}</div>}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {data?.map((c) => (
+        {filteredCourses.map((c) => (
           <Link key={c.id} to={`/courses/${c.id}`} className="group block">
             <Card className="!p-0 overflow-hidden border-amber-200/60 bg-white shadow-sm transition hover:shadow-lg dark:border-slate-800 dark:bg-slate-950">
               <div className="flex flex-col sm:flex-row">
@@ -67,7 +84,7 @@ export default function CoursesPage() {
 
                   <div className="mt-5 flex items-center justify-between border-t border-amber-100/70 pt-4 text-sm dark:border-slate-800">
                     <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                      Lessons: {c.lessons?.length || 0}
+                      Lessons: {c._count?.lessons ?? 0}
                     </div>
                     <div className="inline-flex items-center gap-2 text-sm font-semibold text-amber-700 transition group-hover:translate-x-0.5 dark:text-amber-300">
                       View course
@@ -80,6 +97,15 @@ export default function CoursesPage() {
           </Link>
         ))}
       </div>
+
+      {!isLoading && !error && filteredCourses.length === 0 && (
+        <div className="rounded-3xl border border-dashed border-amber-200/70 bg-white/70 px-6 py-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-950/40">
+          <div className="text-lg font-semibold text-slate-900 dark:text-white">No courses match your search</div>
+          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            Try another keyword, instructor email, or a broader topic.
+          </div>
+        </div>
+      )}
     </div>
   );
 }

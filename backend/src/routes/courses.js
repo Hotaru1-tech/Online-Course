@@ -38,7 +38,8 @@ coursesRouter.get('/', async (req, res) => {
       bannerUrl: true,
       published: true,
       createdAt: true,
-      instructor: { select: { id: true, email: true } }
+      instructor: { select: { id: true, email: true } },
+      _count: { select: { lessons: true } }
     }
   });
 
